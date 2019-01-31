@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -8,15 +9,14 @@ using System.Web.Http.Description;
 using TaskManager.BL;
 using TaskManager.DAL;
 
-namespace TaskManager.Services.Controllers
+namespace ProjectManager.Services.Controllers
 {
     public class ProjectsController : ApiController
     {
-
-        public ProjectCrud ProjectsDetailGetter { get; set; }
+        public ProjectCrud ProjectDetailsGetter { get; set; }
         public ProjectsController()
         {
-            ProjectsDetailGetter = new ProjectCrud();
+            ProjectDetailsGetter = new ProjectCrud();
         }
         /// <summary>
         /// 
@@ -24,26 +24,26 @@ namespace TaskManager.Services.Controllers
         /// <returns></returns>
         public IEnumerable<Project> Get()
         {
-            return ProjectsDetailGetter.GetAllProject();
+            return ProjectDetailsGetter.GetAllProject();
         }
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="ProjectId">ProjectId</param>
+        /// <param name="ProjectId"></param>
         /// <returns></returns>
         [HttpGet]
         [ResponseType(typeof(Project))]
-        public HttpResponseMessage Get(int ProjectId)
+        public IHttpActionResult Get(int ProjectId)
         {
 
-            Project i = ProjectsDetailGetter.GetProject(ProjectId);
+            Project i = ProjectDetailsGetter.GetProject(ProjectId);
             if (i != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, i);
+                return Ok(i);
             }
             else
             {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Projects Id : " + ProjectId + " Not Found");
+                return NotFound();
             }
 
         }
@@ -53,26 +53,15 @@ namespace TaskManager.Services.Controllers
         /// <param name="i"></param>
         /// <returns></returns>
         [ResponseType(typeof(void))]
-        public HttpResponseMessage Post([FromBody] Project i)
+        public IHttpActionResult Post(int ProjectId, Project t)
         {
-            string Result = null;
-            try
+            if (!ModelState.IsValid)
             {
-                Result = ProjectsDetailGetter.AddProject(i);
-                if (Result.Equals("Success"))
-                {
-                    HttpResponseMessage Message = Request.CreateResponse(HttpStatusCode.Created, i);
-                    return Message;
-                }
-                else
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, Result);
-                }
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
-            }
+            ProjectDetailsGetter.AddProject(t);
+            return CreatedAtRoute("DefaultApi", new { id = t.ProjectId }, t);
+
         }
         /// <summary>
         /// 
@@ -80,60 +69,50 @@ namespace TaskManager.Services.Controllers
         /// <param name="i"></param>
         /// <returns></returns>
         [ResponseType(typeof(void))]
-        public HttpResponseMessage Put([FromBody] Project i)
+        public IHttpActionResult Put(int ProjectId, Project project)
         {
-            string Result = null;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (ProjectId != project.ProjectId)
+            {
+                return BadRequest();
+            }
             try
             {
-                Result = ProjectsDetailGetter.UpdateProject(i);
-                if (Result.Equals("Success"))
+                ProjectDetailsGetter.UpdateProject(project);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProjectDetailsGetter.IsProjectExist(ProjectId))
                 {
-                    HttpResponseMessage Message = Request.CreateResponse(HttpStatusCode.OK, i);
-                    return Message;
+                    return NotFound();
                 }
                 else
                 {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, Result);
+                    throw;
                 }
+            }
+            return StatusCode(HttpStatusCode.NoContent);
 
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
-            }
         }
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="ProjectId">ProjectId</param>
+        /// <param name="ProjectId"></param>
         /// <returns></returns>
         [ResponseType(typeof(Project))]
-        public HttpResponseMessage Delete(int ProjectId)
+        public IHttpActionResult Delete(int ProjectId)
         {
-            string Result = null;
-            try
+            Project Project = ProjectDetailsGetter.GetProject(ProjectId);
+            if (Project == null)
             {
-                Result = ProjectsDetailGetter.RemoveProject(ProjectId);
-                if (Result.Equals("Success"))
-                {
-                    HttpResponseMessage Message = Request.CreateResponse(HttpStatusCode.OK, Result);
-                    return Message;
-                }
-                else if (Result.Contains(" Not found"))
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, Result);
-                }
-                else
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, Result);
-                }
-
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
-            }
-
+            ProjectDetailsGetter.RemoveProject(ProjectId);
+            return Ok(Project);
         }
     }
 }

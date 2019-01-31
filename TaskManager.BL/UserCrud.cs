@@ -12,13 +12,13 @@ namespace TaskManager.BL
         /// <summary>
         /// Getting All the User Information from the database
         /// </summary>
-        /// <returns>List of Users</returns>
-        public IEnumerable<Users> GetAllUser()
+        /// <returns>List of User</returns>
+        public IEnumerable<User> GetAllUser()
         {
             using (CapsuleEntities PE = new CapsuleEntities())
             {
                 PE.Configuration.ProxyCreationEnabled = false;
-                return PE.Userss.ToList();
+                return PE.Users.ToList();
             }
         }
         /// <summary>
@@ -26,13 +26,13 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="UserId">UserId</param>
         /// <returns>User</returns>
-        public Users GetUser(int UserId)
+        public User GetUser(int UserId)
         {
 
             using (CapsuleEntities PE = new CapsuleEntities())
             {
                 PE.Configuration.ProxyCreationEnabled = false;
-                Users i = PE.Userss.Where(x => x.TaskId == UserId).FirstOrDefault();
+                User i = PE.Users.Where(x => x.TaskId == UserId).FirstOrDefault();
                 return i;
             }
         }
@@ -41,14 +41,14 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="i">User</param>
         /// <returns>Status of the Operation</returns>
-        public string AddUser(Users i)
+        public string AddUser(User i)
         {
             try
             {
                 using (CapsuleEntities PE = new CapsuleEntities())
                 {
                     PE.Configuration.ProxyCreationEnabled = false;
-                    PE.Userss.Add(i);
+                    PE.Users.Add(i);
                     PE.SaveChanges();
 
                     return "Success";
@@ -64,14 +64,14 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="i">User</param>
         /// <returns>Status of The User</returns>
-        public string UpdateUser(Users i)
+        public string UpdateUser(User i)
         {
             try
             {
                 using (CapsuleEntities PE = new CapsuleEntities())
                 {
                     PE.Configuration.ProxyCreationEnabled = false;
-                    Users value = PE.Userss.Where(x => x.UserId == i.UserId).FirstOrDefault();
+                    User value = PE.Users.Where(x => x.UserId == i.UserId).FirstOrDefault();
                     value.ProjectId = i.ProjectId;
                     value.LastName = i.LastName;
                     value.FirstName = i.FirstName;
@@ -97,7 +97,7 @@ namespace TaskManager.BL
                 using (CapsuleEntities PE = new CapsuleEntities())
                 {
                     PE.Configuration.ProxyCreationEnabled = false;
-                    Users I = PE.Userss.Where(x => x.UserId   == UserId).FirstOrDefault();
+                    User I = PE.Users.Where(x => x.UserId   == UserId).FirstOrDefault();
                     if (I == null)
                     {
                         return "User with Id " + UserId + " Not found";
@@ -128,7 +128,7 @@ namespace TaskManager.BL
             using (CapsuleEntities PE = new CapsuleEntities())
             {
                 PE.Configuration.ProxyCreationEnabled = false;
-                bool Result = PE.Userss.Count(x => x.UserId == UserId) > 0;
+                bool Result = PE.Users.Count(x => x.UserId == UserId) > 0;
                 return Result;
             }
         }

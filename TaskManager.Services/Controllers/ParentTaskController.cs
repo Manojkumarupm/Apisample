@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -12,10 +13,10 @@ namespace TaskManager.Services.Controllers
 {
     public class ParentTaskController : ApiController
     {
-        public ParentTaskCrud ParentTaskCrudDetailGetter { get; set; }
+        public ParentTaskCrud ParentTaskDetailsGetter { get; set; }
         public ParentTaskController()
         {
-            ParentTaskCrudDetailGetter = new ParentTaskCrud();
+            ParentTaskDetailsGetter = new ParentTaskCrud();
         }
         /// <summary>
         /// 
@@ -23,26 +24,26 @@ namespace TaskManager.Services.Controllers
         /// <returns></returns>
         public IEnumerable<ParentTask> Get()
         {
-            return ParentTaskCrudDetailGetter.GetAllParentTask();
+            return ParentTaskDetailsGetter.GetAllParentTask();
         }
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="ProjectId">ProjectId</param>
+        /// <param name="ParentTaskId"></param>
         /// <returns></returns>
         [HttpGet]
-        [ResponseType(typeof(Project))]
-        public HttpResponseMessage Get(int ProjectId)
+        [ResponseType(typeof(ParentTask))]
+        public IHttpActionResult Get(int ParentTaskId)
         {
 
-            ParentTask i = ParentTaskCrudDetailGetter.GetParentTask(ProjectId);
+            ParentTask i = ParentTaskDetailsGetter.GetParentTask(ParentTaskId);
             if (i != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, i);
+                return Ok(i);
             }
             else
             {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "ParentTaskCrud Id : " + ProjectId + " Not Found");
+                return NotFound();
             }
 
         }
@@ -52,26 +53,15 @@ namespace TaskManager.Services.Controllers
         /// <param name="i"></param>
         /// <returns></returns>
         [ResponseType(typeof(void))]
-        public HttpResponseMessage Post([FromBody] ParentTask i)
+        public IHttpActionResult Post(int ParentTaskId, ParentTask t)
         {
-            string Result = null;
-            try
+            if (!ModelState.IsValid)
             {
-                Result = ParentTaskCrudDetailGetter.AddParentTask(i);
-                if (Result.Equals("Success"))
-                {
-                    HttpResponseMessage Message = Request.CreateResponse(HttpStatusCode.Created, i);
-                    return Message;
-                }
-                else
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, Result);
-                }
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
-            }
+            ParentTaskDetailsGetter.AddParentTask(t);
+            return CreatedAtRoute("DefaultApi", new { id = t.ParentId }, t);
+
         }
         /// <summary>
         /// 
@@ -79,60 +69,50 @@ namespace TaskManager.Services.Controllers
         /// <param name="i"></param>
         /// <returns></returns>
         [ResponseType(typeof(void))]
-        public HttpResponseMessage Put([FromBody] ParentTask i)
+        public IHttpActionResult Put(int ParentTaskId, ParentTask ParentTask)
         {
-            string Result = null;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (ParentTaskId != ParentTask.ParentId)
+            {
+                return BadRequest();
+            }
             try
             {
-                Result = ParentTaskCrudDetailGetter.UpdateParentTask(i);
-                if (Result.Equals("Success"))
+                ParentTaskDetailsGetter.UpdateParentTask(ParentTask);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ParentTaskDetailsGetter.IsParentTaskExist(ParentTaskId))
                 {
-                    HttpResponseMessage Message = Request.CreateResponse(HttpStatusCode.OK, i);
-                    return Message;
+                    return NotFound();
                 }
                 else
                 {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, Result);
+                    throw;
                 }
+            }
+            return StatusCode(HttpStatusCode.NoContent);
 
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
-            }
         }
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="ParentTaskId">ParentTaskId</param>
+        /// <param name="ParentTaskId"></param>
         /// <returns></returns>
-        [ResponseType(typeof(Project))]
-        public HttpResponseMessage Delete(int ParentTaskId)
+        [ResponseType(typeof(ParentTask))]
+        public IHttpActionResult Delete(int ParentTaskId)
         {
-            string Result = null;
-            try
+            ParentTask ParentTask = ParentTaskDetailsGetter.GetParentTask(ParentTaskId);
+            if (ParentTask == null)
             {
-                Result = ParentTaskCrudDetailGetter.RemoveParentTask(ParentTaskId);
-                if (Result.Equals("Success"))
-                {
-                    HttpResponseMessage Message = Request.CreateResponse(HttpStatusCode.OK, Result);
-                    return Message;
-                }
-                else if (Result.Contains(" Not found"))
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, Result);
-                }
-                else
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, Result);
-                }
-
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
-            }
-
+            ParentTaskDetailsGetter.RemoveParentTask(ParentTaskId);
+            return Ok(ParentTask);
         }
     }
 }

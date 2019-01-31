@@ -12,7 +12,7 @@ namespace TaskManager.DAL
     using System;
     using System.Collections.Generic;
     
-    public partial class Users
+    public partial class User
     {
         public int UserId { get; set; }
         public string FirstName { get; set; }

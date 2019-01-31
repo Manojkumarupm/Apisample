@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -36,17 +37,17 @@ namespace TaskManager.Services.Controllers
         /// <returns></returns>
         [HttpGet]
          [ResponseType(typeof(TaskInformation))]
-        public HttpResponseMessage Get(int TaskId)
+        public IHttpActionResult Get(int TaskId)
         {
 
             TaskInformation i = TaskDetailsGetter.GetTask(TaskId);
             if (i != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, i);
+                return Ok(i);
             }
             else
             {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Task Id : " + TaskId + " Not Found");
+                return NotFound();
             }
 
         }
@@ -56,26 +57,15 @@ namespace TaskManager.Services.Controllers
         /// <param name="i"></param>
         /// <returns></returns>
         [ResponseType(typeof(void))]
-        public HttpResponseMessage Post([FromBody] TaskInformation i)
+        public IHttpActionResult Post(int TaskId,TaskInformation t)
         {
-            string Result = null;
-            try
+            if (!ModelState.IsValid)
             {
-                Result = TaskDetailsGetter.AddTask(i);
-                if (Result.Equals("Success"))
-                {
-                    HttpResponseMessage Message = Request.CreateResponse(HttpStatusCode.Created, i);
-                    return Message;
-                }
-                else
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, Result);
-                }
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
-            }
+            TaskDetailsGetter.AddTask(t);
+            return CreatedAtRoute("DefaultApi", new { id = t.TaskId }, t);
+             
         }
         /// <summary>
         /// 
@@ -83,27 +73,34 @@ namespace TaskManager.Services.Controllers
         /// <param name="i"></param>
         /// <returns></returns>
         [ResponseType(typeof(void))]
-        public HttpResponseMessage Put([FromBody] TaskInformation i)
+        public IHttpActionResult Put(int TaskId, TaskInformation t)
         {
-            string Result = null;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (TaskId != t.TaskId)
+            {
+                return BadRequest();
+            }
             try
             {
-                Result = TaskDetailsGetter.UpdateTask(i);
-                if (Result.Equals("Success"))
+                TaskDetailsGetter.UpdateTask(t);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!TaskDetailsGetter.IsTaskExist(TaskId))
                 {
-                    HttpResponseMessage Message = Request.CreateResponse(HttpStatusCode.OK, i);
-                    return Message;
+                    return NotFound();
                 }
                 else
                 {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, Result);
+                    throw;
                 }
-
             }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
-            }
+             return StatusCode(HttpStatusCode.NoContent);
+             
         }
         /// <summary>
         /// 
@@ -111,32 +108,15 @@ namespace TaskManager.Services.Controllers
         /// <param name="TaskId"></param>
         /// <returns></returns>
         [ResponseType(typeof(TaskInformation))]
-        public HttpResponseMessage Delete(int TaskId)
+        public IHttpActionResult Delete(int TaskId)
         {
-            string Result = null;
-            try
+            TaskInformation task = TaskDetailsGetter.GetTask(TaskId);
+            if (task == null)
             {
-                Result = TaskDetailsGetter.RemoveTask(TaskId);
-                if (Result.Equals("Success"))
-                {
-                    HttpResponseMessage Message = Request.CreateResponse(HttpStatusCode.OK, Result);
-                    return Message;
-                }
-                else if (Result.Contains(" Not found"))
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, Result);
-                }
-                else
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, Result);
-                }
-
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
-            }
-
+            TaskDetailsGetter.RemoveTask(TaskId);
+            return Ok(task); 
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -21,28 +22,28 @@ namespace TaskManager.Services.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Users> Get()
+        public IEnumerable<User> Get()
         {
             return UserDetailsGetter.GetAllUser();
         }
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="UserId">UserId</param>
+        /// <param name="UserId"></param>
         /// <returns></returns>
         [HttpGet]
-        [ResponseType(typeof(Users))]
-        public HttpResponseMessage Get(int UserId)
+        [ResponseType(typeof(User))]
+        public IHttpActionResult Get(int UserId)
         {
 
-            Users i = UserDetailsGetter.GetUser(UserId);
+            User i = UserDetailsGetter.GetUser(UserId);
             if (i != null)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, i);
+                return Ok(i);
             }
             else
             {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "User Id : " + UserId + " Not Found");
+                return NotFound();
             }
 
         }
@@ -52,26 +53,15 @@ namespace TaskManager.Services.Controllers
         /// <param name="i"></param>
         /// <returns></returns>
         [ResponseType(typeof(void))]
-        public HttpResponseMessage Post([FromBody] Users i)
+        public IHttpActionResult Post(int UserId, User t)
         {
-            string Result = null;
-            try
+            if (!ModelState.IsValid)
             {
-                Result = UserDetailsGetter.AddUser(i);
-                if (Result.Equals("Success"))
-                {
-                    HttpResponseMessage Message = Request.CreateResponse(HttpStatusCode.Created, i);
-                    return Message;
-                }
-                else
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, Result);
-                }
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
-            }
+            UserDetailsGetter.AddUser(t);
+            return CreatedAtRoute("DefaultApi", new { id = t.UserId }, t);
+
         }
         /// <summary>
         /// 
@@ -79,60 +69,50 @@ namespace TaskManager.Services.Controllers
         /// <param name="i"></param>
         /// <returns></returns>
         [ResponseType(typeof(void))]
-        public HttpResponseMessage Put([FromBody] Users i)
+        public IHttpActionResult Put(int UserId, User User)
         {
-            string Result = null;
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (UserId != User.UserId)
+            {
+                return BadRequest();
+            }
             try
             {
-                Result = UserDetailsGetter.UpdateUser(i);
-                if (Result.Equals("Success"))
+                UserDetailsGetter.UpdateUser(User);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserDetailsGetter.IsUserExist(UserId))
                 {
-                    HttpResponseMessage Message = Request.CreateResponse(HttpStatusCode.OK, i);
-                    return Message;
+                    return NotFound();
                 }
                 else
                 {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, Result);
+                    throw;
                 }
+            }
+            return StatusCode(HttpStatusCode.NoContent);
 
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
-            }
         }
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="UserId">UserId</param>
+        /// <param name="UserId"></param>
         /// <returns></returns>
-        [ResponseType(typeof(Users))]
-        public HttpResponseMessage Delete(int UserId)
+        [ResponseType(typeof(User))]
+        public IHttpActionResult Delete(int UserId)
         {
-            string Result = null;
-            try
+            User User = UserDetailsGetter.GetUser(UserId);
+            if (User == null)
             {
-                Result = UserDetailsGetter.RemoveUser(UserId);
-                if (Result.Equals("Success"))
-                {
-                    HttpResponseMessage Message = Request.CreateResponse(HttpStatusCode.OK, Result);
-                    return Message;
-                }
-                else if (Result.Contains(" Not found"))
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, Result);
-                }
-                else
-                {
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, Result);
-                }
-
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
-            }
-
+            UserDetailsGetter.RemoveUser(UserId);
+            return Ok(User);
         }
     }
 }

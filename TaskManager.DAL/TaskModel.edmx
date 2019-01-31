@@ -4,16 +4,15 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="CapsuleModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="CapsuleModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <!--Errors Found During Generation:
 warning 6002: The table/view 'Capsule.dbo.ParentTask' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="ParentTask">
           <Key>
             <PropertyRef Name="ParentId" />
-            <PropertyRef Name="ParentTask" />
           </Key>
-          <Property Name="ParentId" Type="int" Nullable="false" />
-          <Property Name="ParentTask" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="ParentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ParentTask1" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="Project">
           <Key>
@@ -40,8 +39,8 @@ warning 6002: The table/view 'Capsule.dbo.ParentTask' does not have a primary ke
           <Property Name="UserId" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'Capsule.dbo.Users' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="Users">
+warning 6002: The table/view 'Capsule.dbo.User' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="User">
           <Key>
             <PropertyRef Name="UserId" />
           </Key>
@@ -58,21 +57,22 @@ warning 6002: The table/view 'Capsule.dbo.Users' does not have a primary key def
           <EntitySet Name="ParentTask" EntityType="Self.ParentTask" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [ParentTask].[ParentId] AS [ParentId], 
-    [ParentTask].[ParentTask] AS [ParentTask]
+    [ParentTask].[ParentTask1] AS [ParentTask1]
     FROM [dbo].[ParentTask] AS [ParentTask]</DefiningQuery>
           </EntitySet>
-          <EntitySet Name="Users" EntityType="Self.Users" store:Type="Tables" store:Schema="dbo">
+          <EntitySet Name="User" EntityType="Self.User" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
-    [Users].[UserId] AS [UserId], 
-    [Users].[FirstName] AS [FirstName], 
-    [Users].[LastName] AS [LastName], 
-    [Users].[EmployeeId] AS [EmployeeId], 
-    [Users].[ProjectId] AS [ProjectId], 
-    [Users].[TaskId] AS [TaskId]
-    FROM [dbo].[Users] AS [Users]</DefiningQuery>
+    [User].[UserId] AS [UserId], 
+    [User].[FirstName] AS [FirstName], 
+    [User].[LastName] AS [LastName], 
+    [User].[EmployeeId] AS [EmployeeId], 
+    [User].[ProjectId] AS [ProjectId], 
+    [User].[TaskId] AS [TaskId]
+    FROM [dbo].[User] AS [User]</DefiningQuery>
           </EntitySet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="CapsuleModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -100,6 +100,13 @@ warning 6002: The table/view 'Capsule.dbo.Users' does not have a primary key def
           <Property Name="IsTaskCompleted" Type="Int32" />
           <Property Name="UserId" Type="Int32" />
         </EntityType>
+        <EntityType Name="ParentTask">
+          <Key>
+            <PropertyRef Name="ParentId" />
+          </Key>
+          <Property Name="ParentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentTask1" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+        </EntityType>
         <EntityType Name="User">
           <Key>
             <PropertyRef Name="UserId" />
@@ -111,26 +118,18 @@ warning 6002: The table/view 'Capsule.dbo.Users' does not have a primary key def
           <Property Name="ProjectId" Type="Int32" />
           <Property Name="TaskId" Type="Int32" />
         </EntityType>
-        <EntityContainer Name="CapsuleEntities1" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="CapsuleEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Projects" EntityType="Self.Project" />
           <EntitySet Name="TaskInformations" EntityType="Self.TaskInformation" />
+          <EntitySet Name="ParentTasks" EntityType="Self.ParentTask" />
           <EntitySet Name="Users" EntityType="Self.User" />
-          <EntitySet Name="ParentTasks" EntityType="CapsuleModel.ParentTask" />
         </EntityContainer>
-        <EntityType Name="ParentTask">
-          <Key>
-            <PropertyRef Name="ParentId" />
-            <PropertyRef Name="ParentTask1" />
-          </Key>
-          <Property Name="ParentId" Type="Int32" Nullable="false" />
-          <Property Name="ParentTask1" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="CapsuleModelStoreContainer" CdmEntityContainer="CapsuleEntities1">
+        <EntityContainerMapping StorageEntityContainer="CapsuleModelStoreContainer" CdmEntityContainer="CapsuleEntities">
           <EntitySetMapping Name="Projects">
             <EntityTypeMapping TypeName="CapsuleModel.Project">
               <MappingFragment StoreEntitySet="Project">
@@ -157,23 +156,23 @@ warning 6002: The table/view 'Capsule.dbo.Users' does not have a primary key def
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="ParentTasks">
+            <EntityTypeMapping TypeName="CapsuleModel.ParentTask">
+              <MappingFragment StoreEntitySet="ParentTask">
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="ParentTask1" ColumnName="ParentTask1" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="CapsuleModel.User">
-              <MappingFragment StoreEntitySet="Users">
+              <MappingFragment StoreEntitySet="User">
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
                 <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
                 <ScalarProperty Name="TaskId" ColumnName="TaskId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="ParentTasks">
-            <EntityTypeMapping TypeName="CapsuleModel.ParentTask">
-              <MappingFragment StoreEntitySet="ParentTask">
-                <ScalarProperty Name="ParentTask1" ColumnName="ParentTask" />
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
