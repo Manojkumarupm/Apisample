@@ -77,7 +77,8 @@ namespace TaskManager.BL
                     value.Priority = i.Priority;
                     value.StartDate = i.StartDate;
                     value.EndDate = i.EndDate;
-                    value.ParentID = i.ParentID;
+                    value.ParentId = i.ParentId;
+                    
                     value.TaskDescription = i.TaskDescription;
                     value.IsTaskCompleted = i.IsTaskCompleted;
                     PE.SaveChanges();

@@ -47,21 +47,23 @@ PRIMARY KEY CLUSTERED
 GO
 
 
-
-
 USE [Capsule]
 GO
 
-/****** Object:  Table [dbo].[TaskInformation]    Script Date: 01-02-2019 10:54:59 ******/
+/****** Object:  Table [dbo].[TaskInformation]    Script Date: 01-02-2019 21:43:28 ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
+SET ANSI_PADDING ON
+GO
+
 CREATE TABLE [dbo].[TaskInformation](
 	[TaskId] [int] IDENTITY(1,1) NOT NULL,
 	[ParentId] [int] NULL,
+	[ProjectId] [int] NULL,
 	[TaskDescription] [varchar](255) NULL,
 	[StartDate] [date] NOT NULL,
 	[EndDate] [date] NOT NULL,
@@ -75,6 +77,11 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY]
 
 GO
+
+SET ANSI_PADDING OFF
+GO
+
+
 
 
 USE [Capsule]

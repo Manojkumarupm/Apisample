@@ -15,13 +15,13 @@ namespace TaskManager.DAL
     public partial class TaskInformation
     {
         public int TaskId { get; set; }
-        public Nullable<int> ParentID { get; set; }
+        public Nullable<int> ParentId { get; set; }
         public string TaskDescription { get; set; }
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
         public Nullable<int> Priority { get; set; }
         public Nullable<int> IsTaskCompleted { get; set; }
         public Nullable<int> UserId { get; set; }
-        public Nullable<int> ParentId { get; set; }
+        public Nullable<int> ProjectId { get; set; }
     }
 }

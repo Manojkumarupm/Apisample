@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="CapsuleModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="CapsuleModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="ParentTask">
           <Key>
             <PropertyRef Name="ParentId" />
@@ -29,6 +29,7 @@
           </Key>
           <Property Name="TaskId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ParentId" Type="int" />
+          <Property Name="ProjectId" Type="int" />
           <Property Name="TaskDescription" Type="varchar" MaxLength="255" />
           <Property Name="StartDate" Type="date" Nullable="false" />
           <Property Name="EndDate" Type="date" Nullable="false" />
@@ -57,26 +58,37 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="CapsuleModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="TaskInformation">
-          <Key>
-            <PropertyRef Name="TaskId" />
-          </Key>
-          <Property Name="TaskId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ParentID" Type="Int32" />
-          <Property Name="TaskDescription" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="Priority" Type="Int32" />
-          <Property Name="IsTaskCompleted" Type="Int32" />
-          <Property Name="UserId" Type="Int32" />
-          <Property Name="ParentId" Type="Int32" />
-        </EntityType>
         <EntityType Name="ParentTask">
           <Key>
             <PropertyRef Name="ParentId" />
           </Key>
           <Property Name="ParentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ParentTask1" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Project">
+          <Key>
+            <PropertyRef Name="ProjectId" />
+          </Key>
+          <Property Name="ProjectId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProjectDescription" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Priority" Type="Int32" Nullable="false" />
+          <Property Name="ManagerUserId" Type="Int32" />
+        </EntityType>
+        <EntityType Name="TaskInformation">
+          <Key>
+            <PropertyRef Name="TaskId" />
+          </Key>
+          <Property Name="TaskId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="TaskDescription" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Priority" Type="Int32" />
+          <Property Name="IsTaskCompleted" Type="Int32" />
+          <Property Name="UserId" Type="Int32" />
+          <Property Name="ProjectId" Type="Int32" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -90,47 +102,49 @@
           <Property Name="TaskId" Type="Int32" />
         </EntityType>
         <EntityContainer Name="CapsuleEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="TaskInformations" EntityType="Self.TaskInformation" />
           <EntitySet Name="ParentTasks" EntityType="Self.ParentTask" />
+          <EntitySet Name="Projects" EntityType="Self.Project" />
+          <EntitySet Name="TaskInformations" EntityType="Self.TaskInformation" />
           <EntitySet Name="Users" EntityType="Self.User" />
-          <EntitySet Name="Projects" EntityType="CapsuleModel.Project" />
         </EntityContainer>
-        <EntityType Name="Project">
-          <Key>
-            <PropertyRef Name="ProjectId" />
-          </Key>
-          <Property Name="ProjectId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ProjectDescription" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="Priority" Type="Int32" Nullable="false" />
-          <Property Name="ManagerUserId" Type="Int32" />
-        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="CapsuleModelStoreContainer" CdmEntityContainer="CapsuleEntities">
+          <EntitySetMapping Name="ParentTasks">
+            <EntityTypeMapping TypeName="CapsuleModel.ParentTask">
+              <MappingFragment StoreEntitySet="ParentTask">
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="ParentTask1" ColumnName="ParentTask1" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Projects">
+            <EntityTypeMapping TypeName="CapsuleModel.Project">
+              <MappingFragment StoreEntitySet="Project">
+                <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
+                <ScalarProperty Name="ProjectDescription" ColumnName="ProjectDescription" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="ManagerUserId" ColumnName="ManagerUserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="TaskInformations">
             <EntityTypeMapping TypeName="CapsuleModel.TaskInformation">
               <MappingFragment StoreEntitySet="TaskInformation">
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
                 <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
                 <ScalarProperty Name="TaskDescription" ColumnName="TaskDescription" />
                 <ScalarProperty Name="StartDate" ColumnName="StartDate" />
                 <ScalarProperty Name="EndDate" ColumnName="EndDate" />
                 <ScalarProperty Name="Priority" ColumnName="Priority" />
                 <ScalarProperty Name="IsTaskCompleted" ColumnName="IsTaskCompleted" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="ParentTasks">
-            <EntityTypeMapping TypeName="CapsuleModel.ParentTask">
-              <MappingFragment StoreEntitySet="ParentTask">
-                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
-                <ScalarProperty Name="ParentTask1" ColumnName="ParentTask1" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -143,18 +157,6 @@
                 <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
                 <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
                 <ScalarProperty Name="TaskId" ColumnName="TaskId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Projects">
-            <EntityTypeMapping TypeName="CapsuleModel.Project">
-              <MappingFragment StoreEntitySet="Project">
-                <ScalarProperty Name="ManagerUserId" ColumnName="ManagerUserId" />
-                <ScalarProperty Name="Priority" ColumnName="Priority" />
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
-                <ScalarProperty Name="ProjectDescription" ColumnName="ProjectDescription" />
-                <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
