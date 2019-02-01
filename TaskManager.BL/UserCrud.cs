@@ -32,7 +32,7 @@ namespace TaskManager.BL
             using (CapsuleEntities PE = new CapsuleEntities())
             {
                 PE.Configuration.ProxyCreationEnabled = false;
-                User i = PE.Users.Where(x => x.TaskId == UserId).FirstOrDefault();
+                User i = PE.Users.Where(x => x.UserId == UserId).FirstOrDefault();
                 return i;
             }
         }
