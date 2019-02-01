@@ -57,7 +57,7 @@ namespace TaskManager.Services.Controllers
         /// <param name="i"></param>
         /// <returns></returns>
         [ResponseType(typeof(void))]
-        public IHttpActionResult Post(int TaskId,TaskInformation t)
+        public IHttpActionResult Post(TaskInformation t)
         {
             if (!ModelState.IsValid)
             {

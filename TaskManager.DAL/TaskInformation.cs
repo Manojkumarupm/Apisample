@@ -22,5 +22,6 @@ namespace TaskManager.DAL
         public Nullable<int> Priority { get; set; }
         public Nullable<int> IsTaskCompleted { get; set; }
         public Nullable<int> UserId { get; set; }
+        public Nullable<int> ParentId { get; set; }
     }
 }

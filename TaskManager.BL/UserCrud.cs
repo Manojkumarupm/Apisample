@@ -7,7 +7,7 @@ using TaskManager.DAL;
 
 namespace TaskManager.BL
 {
-   public class UserCrud
+    public class UserCrud
     {
         /// <summary>
         /// Getting All the User Information from the database
@@ -41,7 +41,7 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="i">User</param>
         /// <returns>Status of the Operation</returns>
-        public string AddUser(User i)
+        public User AddUser(User i)
         {
             try
             {
@@ -51,12 +51,12 @@ namespace TaskManager.BL
                     PE.Users.Add(i);
                     PE.SaveChanges();
 
-                    return "Success";
+                    return i;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return "Failed" + ex.Message;
+                throw;
             }
         }
         /// <summary>
@@ -64,7 +64,7 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="i">User</param>
         /// <returns>Status of The User</returns>
-        public string UpdateUser(User i)
+        public User UpdateUser(User i)
         {
             try
             {
@@ -75,14 +75,14 @@ namespace TaskManager.BL
                     value.ProjectId = i.ProjectId;
                     value.LastName = i.LastName;
                     value.FirstName = i.FirstName;
-                    value.EmployeeId = i.EmployeeId; 
+                    value.EmployeeId = i.EmployeeId;
                     PE.SaveChanges();
-                    return "Updated";
+                    return i;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return "failed : " + ex.Message;
+                throw;
             }
         }
         /// <summary>
@@ -90,30 +90,26 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="UserId">UserId</param>
         /// <returns>Status of the Operation</returns>
-        public string RemoveUser(int UserId)
+        public User RemoveUser(int UserId)
         {
             try
             {
+                User I = null;
                 using (CapsuleEntities PE = new CapsuleEntities())
                 {
                     PE.Configuration.ProxyCreationEnabled = false;
-                    User I = PE.Users.Where(x => x.UserId   == UserId).FirstOrDefault();
-                    if (I == null)
-                    {
-                        return "User with Id " + UserId + " Not found";
-                    }
-                    else
-                    {
-                        PE.Entry(I).State = System.Data.Entity.EntityState.Deleted;
-                        PE.SaveChanges();
-                        return "Success";
-                    }
-                }
+                    I = PE.Users.Where(x => x.UserId == UserId).FirstOrDefault();
 
+                    PE.Entry(I).State = System.Data.Entity.EntityState.Deleted;
+                    PE.SaveChanges();
+
+                }
+                return I;
             }
-            catch (Exception ex)
+
+            catch (Exception)
             {
-                return "Failed : " + ex.Message;
+                throw;
             }
 
         }

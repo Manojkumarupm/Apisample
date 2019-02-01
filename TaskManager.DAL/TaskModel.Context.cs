@@ -25,9 +25,9 @@ namespace TaskManager.DAL
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Project> Projects { get; set; }
         public virtual DbSet<TaskInformation> TaskInformations { get; set; }
         public virtual DbSet<ParentTask> ParentTasks { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Project> Projects { get; set; }
     }
 }

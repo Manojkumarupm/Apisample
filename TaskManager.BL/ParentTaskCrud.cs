@@ -41,7 +41,7 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="i">Parent</param>
         /// <returns>Status of the Operation</returns>
-        public string AddParentTask(ParentTask i)
+        public ParentTask AddParentTask(ParentTask i)
         {
             try
             {
@@ -49,13 +49,13 @@ namespace TaskManager.BL
                 {
                     PE.Configuration.ProxyCreationEnabled = false;
                     PE.ParentTasks.Add(i);
-                    PE.SaveChanges(); 
-                    return "Success";
+                    PE.SaveChanges();
+                    return i;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return "Failed" + ex.Message;
+                throw;
             }
         }
         /// <summary>
@@ -63,7 +63,7 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="i">ParentTask</param>
         /// <returns>Status of The ParentTask</returns>
-        public string UpdateParentTask(ParentTask i)
+        public ParentTask UpdateParentTask(ParentTask i)
         {
             try
             {
@@ -71,14 +71,14 @@ namespace TaskManager.BL
                 {
                     PE.Configuration.ProxyCreationEnabled = false;
                     ParentTask value = PE.ParentTasks.Where(x => x.ParentId == i.ParentId).FirstOrDefault();
-                    value.ParentTask1 = i.ParentTask1; 
+                    value.ParentTask1 = i.ParentTask1;
                     PE.SaveChanges();
-                    return "Updated";
+                    return i;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return "failed : " + ex.Message;
+                throw;
             }
         }
         /// <summary>
@@ -86,7 +86,7 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="ParentTaskId">ParentTaskId</param>
         /// <returns>Status of the Operation</returns>
-        public string RemoveParentTask(int ParentTaskId)
+        public ParentTask RemoveParentTask(int ParentTaskId)
         {
             try
             {
@@ -94,22 +94,17 @@ namespace TaskManager.BL
                 {
                     PE.Configuration.ProxyCreationEnabled = false;
                     ParentTask I = PE.ParentTasks.Where(x => x.ParentId == ParentTaskId).FirstOrDefault();
-                    if (I == null)
-                    {
-                        return "Parent with Id " + ParentTaskId + " Not found";
-                    }
-                    else
-                    {
-                        PE.Entry(I).State = System.Data.Entity.EntityState.Deleted;
-                        PE.SaveChanges();
-                        return "Success";
-                    }
+
+                    PE.Entry(I).State = System.Data.Entity.EntityState.Deleted;
+                    PE.SaveChanges();
+                    return I;
                 }
 
+
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return "Failed : " + ex.Message;
+                throw;
             }
 
         }

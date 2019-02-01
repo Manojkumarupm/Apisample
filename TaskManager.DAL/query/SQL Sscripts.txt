@@ -1,0 +1,105 @@
+﻿USE [Capsule]
+GO
+
+/****** Object:  Table [dbo].[ParentTask]    Script Date: 01-02-2019 10:52:24 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[ParentTask](
+	[ParentId] [int] IDENTITY(1,1) NOT NULL,
+	[ParentTask1] [varchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ParentId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
+USE [Capsule]
+GO
+
+/****** Object:  Table [dbo].[Project]    Script Date: 01-02-2019 10:54:48 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Project](
+	[ProjectId] [int] IDENTITY(1,1) NOT NULL,
+	[ProjectDescription] [varchar](255) NOT NULL,
+	[StartDate] [date] NOT NULL,
+	[EndDate] [date] NOT NULL,
+	[Priority] [int] NOT NULL,
+	[ManagerUserId] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ProjectId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+
+
+USE [Capsule]
+GO
+
+/****** Object:  Table [dbo].[TaskInformation]    Script Date: 01-02-2019 10:54:59 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[TaskInformation](
+	[TaskId] [int] IDENTITY(1,1) NOT NULL,
+	[ParentId] [int] NULL,
+	[TaskDescription] [varchar](255) NULL,
+	[StartDate] [date] NOT NULL,
+	[EndDate] [date] NOT NULL,
+	[Priority] [int] NULL,
+	[IsTaskCompleted] [int] NULL,
+	[UserId] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[TaskId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+
+USE [Capsule]
+GO
+
+/****** Object:  Table [dbo].[User]    Script Date: 01-02-2019 10:55:11 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[User](
+	[UserId] [int] IDENTITY(1,1) NOT NULL,
+	[FirstName] [varchar](255) NULL,
+	[LastName] [varchar](255) NULL,
+	[EmployeeId] [int] NULL,
+	[ProjectId] [int] NULL,
+	[TaskId] [int] NULL,
+ CONSTRAINT [userprimarykey] PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+

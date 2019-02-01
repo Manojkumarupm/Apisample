@@ -53,7 +53,7 @@ namespace ProjectManager.Services.Controllers
         /// <param name="i"></param>
         /// <returns></returns>
         [ResponseType(typeof(void))]
-        public IHttpActionResult Post(int ProjectId, Project t)
+        public IHttpActionResult Post( Project t)
         {
             if (!ModelState.IsValid)
             {

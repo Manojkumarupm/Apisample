@@ -53,7 +53,7 @@ namespace TaskManager.Services.Controllers
         /// <param name="i"></param>
         /// <returns></returns>
         [ResponseType(typeof(void))]
-        public IHttpActionResult Post(int UserId, User t)
+        public IHttpActionResult Post( User t)
         {
             if (!ModelState.IsValid)
             {

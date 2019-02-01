@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="i">Project</param>
         /// <returns>Status of the Operation</returns>
-        public string AddProject(Project i)
+        public Project AddProject(Project i)
         {
             try
             {
@@ -52,12 +53,16 @@ namespace TaskManager.BL
                     PE.Projects.Add(i);
                     PE.SaveChanges();
 
-                    return "Success";
+                    return i; 
                 }
             }
-            catch (Exception ex)
+            catch (DbEntityValidationException ex)
             {
-                return "Failed" + ex.Message;
+                throw;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
         /// <summary>
@@ -65,7 +70,7 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="i">Project</param>
         /// <returns>Status of The Project</returns>
-        public string UpdateProject(Project i)
+        public Project UpdateProject(Project i)
         {
             try
             {
@@ -76,15 +81,15 @@ namespace TaskManager.BL
                     value.Priority = i.Priority;
                     value.StartDate = i.StartDate;
                     value.EndDate = i.EndDate;
-                    value.ProjectName   = i.ProjectName;
+                    value.ProjectDescription   = i.ProjectDescription;
                     value.ManagerUserId = i.ManagerUserId; 
                     PE.SaveChanges();
-                    return "Updated";
+                    return value;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return "failed : " + ex.Message;
+                throw;
             }
         }
         /// <summary>
@@ -92,7 +97,8 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="ProjectId">ProjectId</param>
         /// <returns>Status of the Operation</returns>
-        public string RemoveProject(int ProjectId)
+      
+        public Project RemoveProject(int ProjectId)
         {
             try
             {
@@ -100,22 +106,17 @@ namespace TaskManager.BL
                 {
                     PE.Configuration.ProxyCreationEnabled = false;
                     Project I = PE.Projects.Where(x => x.ProjectId == ProjectId).FirstOrDefault();
-                    if (I == null)
-                    {
-                        return "Project with Id " + ProjectId + " Not found";
-                    }
-                    else
-                    {
+                     
                         PE.Entry(I).State = System.Data.Entity.EntityState.Deleted;
                         PE.SaveChanges();
-                        return "Success";
-                    }
+                        return I;
+                     
                 }
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return "Failed : " + ex.Message;
+                throw;
             }
 
         }

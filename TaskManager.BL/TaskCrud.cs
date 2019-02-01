@@ -9,7 +9,7 @@ namespace TaskManager.BL
     /// <summary>
     /// This class will take care of inserting, updating, deleting and getting the task information from the database. everything done based on the entity
     /// </summary>
-    public class TaskCrud : ITaskCrud
+    public class TaskCrud 
     {
         /// <summary>
         /// Getting All the Task Information from the database
@@ -43,7 +43,7 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="i">TaskInformation</param>
         /// <returns>Status of the Operation</returns>
-        public string AddTask(TaskInformation i)
+        public TaskInformation AddTask(TaskInformation i)
         {
             try
             {
@@ -53,12 +53,12 @@ namespace TaskManager.BL
                     PE.TaskInformations.Add(i);
                     PE.SaveChanges(); 
                     
-                    return "Success";
+                    return i;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return "Failed" + ex.Message;
+                throw;
             }
         }
         /// <summary>
@@ -66,7 +66,7 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="i">TaskInformation</param>
         /// <returns>Status of The Task</returns>
-        public string UpdateTask(TaskInformation i)
+        public TaskInformation UpdateTask(TaskInformation i)
         {
             try
             {
@@ -81,12 +81,12 @@ namespace TaskManager.BL
                     value.TaskDescription = i.TaskDescription;
                     value.IsTaskCompleted = i.IsTaskCompleted;
                     PE.SaveChanges();
-                    return "Updated";
+                    return i;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return "failed : " + ex.Message;
+                throw;
             }
         }
         /// <summary>
@@ -94,7 +94,7 @@ namespace TaskManager.BL
         /// </summary>
         /// <param name="TaskId">TaskId</param>
         /// <returns>Status of the Operation</returns>
-        public string RemoveTask(int TaskId)
+        public TaskInformation RemoveTask(int TaskId)
         {
             try
             {
@@ -102,22 +102,17 @@ namespace TaskManager.BL
                 {
                     PE.Configuration.ProxyCreationEnabled = false;
                     TaskInformation I = PE.TaskInformations.Where(x => x.TaskId == TaskId).FirstOrDefault();
-                    if (I == null)
-                    {
-                        return  "Task with Id " + TaskId + " Not found";
-                    }
-                    else
-                    {
+                     
                         PE.Entry(I).State = System.Data.Entity.EntityState.Deleted;
                         PE.SaveChanges();
-                        return "Success";
-                    }
+                    return I;
+                    
                 }
               
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return "Failed : " + ex.Message;
+                throw;
             }
 
         }
