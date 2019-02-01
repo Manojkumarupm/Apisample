@@ -80,7 +80,50 @@ namespace TaskManager.UnitTestProject
             else
                 Assert.IsNotNull(project);
         }
+        [TestMethod]
+        public void PostProjectTest()
+        {
+            //Arrange
+            ProjectCrud projectcrud = new ProjectCrud();
+            //Act                  
+            Project project = new Project();
 
+            project.ProjectDescription = "Test Project";
+            project.Priority = 2;
+            project.ManagerUserId = 1;
+            project.ProjectId = 0;
+            project.StartDate = DateTime.Parse("02/01/2018");
+            project.EndDate = DateTime.Parse("02/01/2018");
+          Project value=   projectcrud.AddProject(project);
+            //Assert
+            if (value != null)
+                Assert.AreEqual(value.ProjectDescription, project.ProjectDescription);
+            else
+                Assert.IsNotNull(value);//Arrange
+        }
+
+        [TestMethod]
+        public void PosTaskTest()
+        {
+            //Arrange
+            TaskCrud taskcrud = new TaskCrud();
+            //Act                  
+            TaskInformation task = new TaskInformation();
+            task.IsTaskCompleted = 0;
+            task.Priority = 4;
+            task.ProjectId = 1;
+            task.TaskId = 0;
+            task.TaskDescription = "Test Child";
+            task.UserId = 1;
+            task.StartDate = DateTime.Parse("02/01/2018");
+            task.EndDate = DateTime.Parse("02/01/2018");
+            TaskInformation value = taskcrud.AddTask(task);
+            //Assert
+            if (value != null)
+                Assert.AreEqual(value.TaskDescription, task.TaskDescription);
+            else
+                Assert.IsNotNull(value);//Arrange
+        }
         [TestMethod]
         public void GetTaskTest()
         {    //Arrange
